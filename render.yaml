@@ -3,15 +3,9 @@ services:
     name: ch-jewels
     runtime: node
     region: singapore
-    plan: 0.5c-512mb
+    plan: free
     buildCommand: npm ci --include=dev && npm run build
-    preDeployCommand: npm run db:migrate
-    startCommand: npm run start -- --hostname 0.0.0.0
-    initialDeployHook: npm run db:bootstrap-admin
-    disk:
-      name: ch-jewels-uploads
-      mountPath: /opt/render/project/src/storage
-      sizeGB: 1
+    startCommand: npm run db:migrate && npm run db:bootstrap-admin && npm run start -- --hostname 0.0.0.0
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -32,7 +26,6 @@ databases:
   - name: ch-jewels-db
     databaseName: ch_jewels
     user: ch_jewels
-    plan: 0.1c-256mb
-    diskSizeGB: 1
+    plan: free
     region: singapore
     postgresMajorVersion: "18"

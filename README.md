@@ -38,11 +38,11 @@ npm run dev                                           # http://localhost:3000
 
 ## Deploy to Render
 
-The root `render.yaml` defines a Next.js web service, a managed PostgreSQL database in Singapore, and 1 GB each for database storage and the persistent disk used for privately uploaded media. Render runs `db:migrate` before each deploy and creates the first admin account once after the initial successful deploy. At current rates, the baseline is about $13.55/month on a Hobby workspace: $7 web compute, $6 Postgres compute, $0.25 media disk, and $0.30 database storage. Usage beyond included bandwidth or build minutes can add charges.
+The root `render.yaml` defines a free Next.js web service and a free managed PostgreSQL database in Singapore. At startup, the service applies pending migrations and creates the first admin account if one does not already exist. Free web services sleep after 15 minutes without requests, and their local filesystem is temporary; uploaded media is lost on restart, sleep, or deploy. Free Postgres has 1 GB of storage and expires 30 days after creation, with no backups, so upgrade the database before relying on it for long-term data.
 
 1. Push this repository to GitHub and create a Blueprint in Render from the repository. Render CLI can validate `render.yaml`; it does not currently offer a command to create or sync a Blueprint.
 2. Enter `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 16 characters when Render asks for secret values. The password is stored in Render's environment settings, not in Git.
-3. Review the resource prices shown by Render and deploy the Blueprint.
+3. Review the free-tier limits and deploy the Blueprint.
 
 The one-time production data transfer imports the existing showroom rows after the schema is deployed: clients, collections, products, media metadata, assignments, shortlist entries, activity, product views, consultations, and settings. Local admin accounts and sessions are excluded; Render creates a fresh admin from the secret values above. Uploaded files are not part of the database export (the local `storage/uploads` directory is empty). The imported client accounts use the demo password documented below, so change those passwords before inviting real clients.
 
