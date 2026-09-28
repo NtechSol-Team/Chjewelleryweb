@@ -3,6 +3,7 @@ services:
     name: ch-jewels
     runtime: node
     region: singapore
+    plan: 0.5c-512mb
     buildCommand: npm ci --include=dev && npm run build
     preDeployCommand: npm run db:migrate
     startCommand: npm run start -- --hostname 0.0.0.0
@@ -31,5 +32,7 @@ databases:
   - name: ch-jewels-db
     databaseName: ch_jewels
     user: ch_jewels
+    plan: 0.1c-256mb
+    diskSizeGB: 1
     region: singapore
     postgresMajorVersion: "18"

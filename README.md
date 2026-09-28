@@ -38,7 +38,7 @@ npm run dev                                           # http://localhost:3000
 
 ## Deploy to Render
 
-The root `render.yaml` defines a Next.js web service, a managed PostgreSQL database in Singapore, and a 1 GB persistent disk for privately uploaded media. Render runs `db:migrate` before each deploy and creates the first admin account once after the initial successful deploy.
+The root `render.yaml` defines a Next.js web service, a managed PostgreSQL database in Singapore, and 1 GB each for database storage and the persistent disk used for privately uploaded media. Render runs `db:migrate` before each deploy and creates the first admin account once after the initial successful deploy. At current rates, the baseline is about $13.55/month on a Hobby workspace: $7 web compute, $6 Postgres compute, $0.25 media disk, and $0.30 database storage. Usage beyond included bandwidth or build minutes can add charges.
 
 1. Push this repository to GitHub and create a Blueprint in Render from the repository.
 2. Enter `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 16 characters when Render asks for secret values. The password is stored in Render's environment settings, not in Git.
