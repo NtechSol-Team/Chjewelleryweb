@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: ch-jewels
+    runtime: node
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build
+    preDeployCommand: npm run db:migrate
+    startCommand: npm run start -- --hostname 0.0.0.0
+    initialDeployHook: npm run db:bootstrap-admin
+    disk:
+      name: ch-jewels-uploads
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ch-jewels-db
+          property: connectionString
+      - key: SESSION_IDLE_MINUTES
+        value: "30"
+      - key: SESSION_MAX_HOURS
+        value: "12"
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+      - key: BOOTSTRAP_ADMIN_NAME
+        value: CH Jewels Administrator
+
+databases:
+  - name: ch-jewels-db
+    databaseName: ch_jewels
+    user: ch_jewels
+    region: singapore
+    postgresMajorVersion: "18"
