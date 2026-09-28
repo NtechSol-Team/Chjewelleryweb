@@ -40,11 +40,11 @@ npm run dev                                           # http://localhost:3000
 
 The root `render.yaml` defines a Next.js web service, a managed PostgreSQL database in Singapore, and 1 GB each for database storage and the persistent disk used for privately uploaded media. Render runs `db:migrate` before each deploy and creates the first admin account once after the initial successful deploy. At current rates, the baseline is about $13.55/month on a Hobby workspace: $7 web compute, $6 Postgres compute, $0.25 media disk, and $0.30 database storage. Usage beyond included bandwidth or build minutes can add charges.
 
-1. Push this repository to GitHub and create a Blueprint in Render from the repository.
+1. Push this repository to GitHub and create a Blueprint in Render from the repository. Render CLI can validate `render.yaml`; it does not currently offer a command to create or sync a Blueprint.
 2. Enter `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 16 characters when Render asks for secret values. The password is stored in Render's environment settings, not in Git.
 3. Review the resource prices shown by Render and deploy the Blueprint.
 
-Production starts with the schema and the initial admin account. It does not run `db:seed`: that script truncates all application tables and creates publicly documented demo accounts. Add production clients and catalogue data through the Atelier Console, or arrange a separately reviewed data migration if you need to carry existing database rows over.
+The one-time production data transfer imports the existing showroom rows after the schema is deployed: clients, collections, products, media metadata, assignments, shortlist entries, activity, product views, consultations, and settings. Local admin accounts and sessions are excluded; Render creates a fresh admin from the secret values above. Uploaded files are not part of the database export (the local `storage/uploads` directory is empty). The imported client accounts use the demo password documented below, so change those passwords before inviting real clients.
 
 ### Demo accounts
 
