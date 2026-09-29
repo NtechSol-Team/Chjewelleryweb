@@ -36,15 +36,9 @@ npm run dev                                           # http://localhost:3000
 | `npm run db:studio` | Browse the database in Drizzle Studio |
 | `npm run typecheck` / `npm run lint` / `npm run build` | Quality gates |
 
-## Deploy to Render
+## Deploy
 
-The root `render.yaml` defines a free Next.js web service and a free managed PostgreSQL database in Singapore. At startup, the service applies pending migrations and creates the first admin account if one does not already exist. Free web services sleep after 15 minutes without requests, and their local filesystem is temporary; uploaded media is lost on restart, sleep, or deploy. Free Postgres has 1 GB of storage and expires 30 days after creation, with no backups, so upgrade the database before relying on it for long-term data.
-
-1. Push this repository to GitHub and create a Blueprint in Render from the repository. Render CLI can validate `render.yaml`; it does not currently offer a command to create or sync a Blueprint.
-2. Enter `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 16 characters when Render asks for secret values. The password is stored in Render's environment settings, not in Git.
-3. Review the free-tier limits and deploy the Blueprint.
-
-The one-time production data transfer imports the existing showroom rows after the schema is deployed: clients, collections, products, media metadata, assignments, shortlist entries, activity, product views, consultations, and settings. Local admin accounts and sessions are excluded; Render creates a fresh admin from the secret values above. Uploaded files are not part of the database export (the local `storage/uploads` directory is empty). The imported client accounts use the demo password documented below, so change those passwords before inviting real clients.
+This app is deployed to a self-hosted droplet at **143.110.248.9** (systemd + nginx + a local PostgreSQL database) — see **[deploy/README.md](deploy/README.md)** for provisioning, restoring the database, redeploying and operating it. There is no PaaS involved; `deploy/provision.sh` sets the server up from scratch and `deploy/deploy.sh` redeploys on each change.
 
 ### Demo accounts
 
@@ -130,7 +124,7 @@ scripts/seed*.ts               Demo data
 ## Before production
 
 - **Replace the demo content.** Photography comes from Unsplash and films from Mixkit, both free-licence placeholders. Editorial copy, product specifications and brand claims are placeholders to be confirmed by CH Jewels. The seeded 360° views sweep a crop across a still image. Real 360° views are 24–72 frame turntable sequences, uploaded as "360° frames".
-- **Storage.** Render's attached disk persists `storage/uploads` for this single service instance. If the app needs multiple instances, move uploads to private object storage (S3, R2 or GCS) behind `/api/media` or signed URLs.
+- **Storage.** The server's own disk persists `storage/uploads` for this single instance — back it up along with the database. If the app ever needs to run on more than one instance, move uploads to private object storage (S3, R2 or GCS) behind `/api/media` or signed URLs.
 - **Sign-in throttling.** Move it to Redis or Upstash.
 - **Transactional email.** Add it for consultation requests and password resets.
 - **Staff roles.** Add granular permissions if more than one team will use the console.
