@@ -36,9 +36,19 @@ npm run dev                                           # http://localhost:3000
 | `npm run db:studio` | Browse the database in Drizzle Studio |
 | `npm run typecheck` / `npm run lint` / `npm run build` | Quality gates |
 
-## Deploy
+## Deploy to Render
 
-This app is deployed to a self-hosted droplet at **143.110.248.9** (systemd + nginx + a local PostgreSQL database) — see **[deploy/README.md](deploy/README.md)** for provisioning, restoring the database, redeploying and operating it. There is no PaaS involved; `deploy/provision.sh` sets the server up from scratch and `deploy/deploy.sh` redeploys on each change.
+Live at **https://chjewellery.onrender.com**. The root `render.yaml` defines a free Next.js web service and a free managed PostgreSQL database in Singapore. At startup, the service applies pending migrations and creates the first admin account if one does not already exist. Free web services sleep after 15 minutes without requests, and their local filesystem is temporary; uploaded media is lost on restart, sleep, or deploy. Free Postgres has 1 GB of storage and expires 30 days after creation, with no backups, so upgrade the database before relying on it for long-term data.
+
+1. Push this repository to GitHub and create a Blueprint in Render from the repository (already done for `chjewellery` / `chjewellery-db`). Render CLI can validate `render.yaml`; it does not currently offer a command to create or sync a Blueprint.
+2. Set `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` (16+ characters) on the service's environment settings — not in Git.
+3. `npm ci` fails on Render's build image over an optional transitive dependency (`lightningcss`'s WASM fallback, via `@emnapi/*`) that resolves slightly differently there than in the lockfile as generated locally; `buildCommand` uses `npm install` instead, which reconciles it rather than failing.
+
+The one-time production data transfer imports the existing showroom rows after the schema is deployed: clients, collections, products, media metadata, assignments, shortlist entries, activity, product views, consultations, and settings. Local admin accounts and sessions are excluded; Render creates a fresh admin from the secret values above until a dump is restored over it. Uploaded files are not part of the database export (the local `storage/uploads` directory is empty). The imported client accounts use the demo password documented below, so change those passwords before inviting real clients.
+
+### Alternative: self-hosted droplet
+
+`deploy/` also has a complete self-hosted setup (systemd + nginx + a local PostgreSQL database, no PaaS) — see **[deploy/README.md](deploy/README.md)**. Not currently in use, kept in case Render's free-tier limits stop being enough.
 
 ### Demo accounts
 
